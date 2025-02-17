@@ -7,6 +7,7 @@ variable "region" {
   description = "The AWS region where resources are to be created."
   default     = "us-west-2"  # Default region if not specified
 }
+
 variable "waf_name" {
   type        = string
   description = "The name of the WAF Web ACL."
