@@ -74,7 +74,7 @@ resource "aws_wafv2_web_acl_association" "example" {
 
 # Create a CloudWatch Log Group for WAF logs
 resource "aws_cloudwatch_log_group" "waf_logs" {
-  name              = "wafv2-${var.waf_name}-logsgroup"
+  name              = "aws-waf-logs-${var.waf_name}"
   retention_in_days = 30  # Adjust retention as needed
 }
 
