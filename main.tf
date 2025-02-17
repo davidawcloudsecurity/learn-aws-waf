@@ -87,9 +87,14 @@ resource "aws_wafv2_web_acl_logging_configuration" "example" {
     default_behavior = "KEEP"
 
     filter {
-      behavior    = "KEEP"
-      condition   = "ALL"
+      behavior = "KEEP"
       requirement = "MEETS_ALL"
+
+      condition {
+        action_condition {
+          action = "BLOCK"
+        }
+      }
     }
   }
 }
