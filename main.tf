@@ -74,13 +74,13 @@ resource "aws_wafv2_web_acl_association" "example" {
 
 # Create a CloudWatch Log Group for WAF logs
 resource "aws_cloudwatch_log_group" "waf_logs" {
-  name              = "/aws/wafv2/${var.waf_name}"
+  name              = "wafv2-${var.waf_name}-logsgroup"
   retention_in_days = 30  # Adjust retention as needed
 }
 
 # Enable logging for the Web ACL to CloudWatch Logs
 resource "aws_wafv2_web_acl_logging_configuration" "example" {
-  log_destination_configs = ["${aws_cloudwatch_log_group.waf_logs.arn}"]  # Ensure proper ARN reference
+  log_destination_configs = [aws_cloudwatch_log_group.waf_logs.arn]
   resource_arn            = aws_wafv2_web_acl.example.arn
 
   depends_on = [aws_cloudwatch_log_group.waf_logs]  # Add explicit dependency
