@@ -73,22 +73,20 @@ resource "aws_wafv2_web_acl_association" "example" {
 }
 
 data "aws_cloudwatch_log_group" "existing" {
-  count = 1
-  name  = "aws-waf-logs-${var.waf_name}"
+  name = "aws-waf-logs-${var.waf_name}"
 }
 
-# Create a CloudWatch Log Group for WAF logs
 resource "aws_cloudwatch_log_group" "waf_logs" {
   count             = length(data.aws_cloudwatch_log_group.existing.*.name) == 0 ? 1 : 0
+  name              = "aws-waf-logs-${var.waf_name}"
   retention_in_days = 30  # Adjust retention as needed
 }
 
-# Enable logging for the Web ACL to CloudWatch Logs
 resource "aws_wafv2_web_acl_logging_configuration" "example" {
   log_destination_configs = [
     length(data.aws_cloudwatch_log_group.existing.*.arn) > 0 ? data.aws_cloudwatch_log_group.existing[0].arn : aws_cloudwatch_log_group.waf_logs[0].arn
   ]
-  resource_arn            = aws_wafv2_web_acl.example.arn
+  resource_arn = aws_wafv2_web_acl.example.arn
 
   depends_on = [aws_cloudwatch_log_group.waf_logs]  # Add explicit dependency
 
@@ -96,7 +94,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "example" {
     default_behavior = "KEEP"
 
     filter {
-      behavior = "KEEP"
+      behavior    = "KEEP"
       requirement = "MEETS_ALL"
 
       condition {
