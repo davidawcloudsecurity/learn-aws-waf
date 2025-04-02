@@ -60,7 +60,7 @@ resource "aws_wafv2_web_acl" "example" {
   visibility_config {
     # Enable metrics collection for the entire Web ACL
     cloudwatch_metrics_enabled = true  
-    metric_name                = "${var.waf_name}-web-acl-metric"
+    metric_name                = "example-web-acl-metric"
     # Enable detailed logging of individual requests for the entire Web ACL
     sampled_requests_enabled   = true  
   }
@@ -72,21 +72,16 @@ resource "aws_wafv2_web_acl_association" "example" {
   web_acl_arn  = aws_wafv2_web_acl.example.arn
 }
 
-data "aws_cloudwatch_log_group" "existing" {
-  name = "aws-waf-logs-${var.waf_name}"
-}
-
+# Create a CloudWatch Log Group for WAF logs
 resource "aws_cloudwatch_log_group" "waf_logs" {
-  count             = length(data.aws_cloudwatch_log_group.existing.*.name) == 0 ? 1 : 0
   name              = "aws-waf-logs-${var.waf_name}"
   retention_in_days = 30  # Adjust retention as needed
 }
 
+# Enable logging for the Web ACL to CloudWatch Logs
 resource "aws_wafv2_web_acl_logging_configuration" "example" {
-  log_destination_configs = [
-    length(data.aws_cloudwatch_log_group.existing.*.arn) > 0 ? data.aws_cloudwatch_log_group.existing[0].arn : aws_cloudwatch_log_group.waf_logs[0].arn
-  ]
-  resource_arn = aws_wafv2_web_acl.example.arn
+  log_destination_configs = [aws_cloudwatch_log_group.waf_logs.arn]
+  resource_arn            = aws_wafv2_web_acl.example.arn
 
   depends_on = [aws_cloudwatch_log_group.waf_logs]  # Add explicit dependency
 
@@ -94,7 +89,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "example" {
     default_behavior = "KEEP"
 
     filter {
-      behavior    = "KEEP"
+      behavior = "KEEP"
       requirement = "MEETS_ALL"
 
       condition {
