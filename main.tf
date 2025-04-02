@@ -60,7 +60,7 @@ resource "aws_wafv2_web_acl" "example" {
   visibility_config {
     # Enable metrics collection for the entire Web ACL
     cloudwatch_metrics_enabled = true  
-    metric_name                = "example-web-acl-metric"
+    metric_name                = "${var.waf_name}-web-acl-metric"
     # Enable detailed logging of individual requests for the entire Web ACL
     sampled_requests_enabled   = true  
   }
