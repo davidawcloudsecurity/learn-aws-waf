@@ -79,7 +79,7 @@ data "aws_cloudwatch_log_group" "existing" {
 
 # Create a CloudWatch Log Group for WAF logs
 resource "aws_cloudwatch_log_group" "waf_logs" {
-  name              = data.aws_cloudwatch_log_group.existing
+  name              = data.aws_cloudwatch_log_group.existing[0]
   retention_in_days = 30  # Adjust retention as needed
 }
 
