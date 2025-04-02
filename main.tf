@@ -79,13 +79,15 @@ data "aws_cloudwatch_log_group" "existing" {
 
 # Create a CloudWatch Log Group for WAF logs
 resource "aws_cloudwatch_log_group" "waf_logs" {
-  name              = data.aws_cloudwatch_log_group.existing[0].name
+  count             = length(data.aws_cloudwatch_log_group.existing.*.name) == 0 ? 1 : 0
   retention_in_days = 30  # Adjust retention as needed
 }
 
 # Enable logging for the Web ACL to CloudWatch Logs
 resource "aws_wafv2_web_acl_logging_configuration" "example" {
-  log_destination_configs = [data.aws_cloudwatch_log_group.existing[0].arn != "" ? data.aws_cloudwatch_log_group.existing[0].arn : aws_cloudwatch_log_group.waf_logs.arn]
+  log_destination_configs = [
+    length(data.aws_cloudwatch_log_group.existing.*.arn) > 0 ? data.aws_cloudwatch_log_group.existing[0].arn : aws_cloudwatch_log_group.waf_logs[0].arn
+  ]
   resource_arn            = aws_wafv2_web_acl.example.arn
 
   depends_on = [aws_cloudwatch_log_group.waf_logs]  # Add explicit dependency
